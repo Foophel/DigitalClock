@@ -1,4 +1,5 @@
-﻿using Microsoft.Maui.Graphics;
+using System.Diagnostics;
+using Microsoft.Maui.Graphics;
 
 namespace DigitalClock;
 
@@ -8,23 +9,26 @@ public class ClockDrawable : IDrawable
 
     public void Draw(ICanvas canvas, RectF dirtyRect)
     {
-        //стиль часов
         canvas.StrokeColor = Colors.Green;
-        canvas.StrokeSize = 8;
+        canvas.StrokeSize = 4;
         canvas.StrokeLineCap = LineCap.Square;
 
-        float digitWidth = 40;
-        float digitHeight = 80;
-        float spacing = 30;
-        float startX = 30;
-        float startY = 50;
+        float digitHeight = dirtyRect.Height * 0.2f;
+        float digitWidth = dirtyRect.Width / 20f;
+        float spacing = 15;
+        
+
+        float totalWidth = TimeText.Length * digitWidth + (TimeText.Length - 1) * spacing;
+        float totalHeight = digitHeight;
+        float startX = (dirtyRect.Width - totalWidth) / 2;
+        float startY = (dirtyRect.Height - totalHeight) / 2;
+        Debug.WriteLine(dirtyRect.Width);
 
         for (int i = 0; i < TimeText.Length; i++)
         {
             char c = TimeText[i];
             float x = startX + i * (digitWidth + spacing);
 
-            //двоеточие
             if (c == ':')
             {
                 canvas.FillColor = Colors.Green;
@@ -33,7 +37,6 @@ public class ClockDrawable : IDrawable
                 continue;
             }
 
-            //Рисуем цифру
             DrawDigit(canvas, c, x, startY, digitWidth, digitHeight);
         }
     }
@@ -46,7 +49,6 @@ public class ClockDrawable : IDrawable
         float left = x;
         float right = x + w;
 
-        //циферки
         if (digit == '0')
         {
             canvas.DrawLine(left, top, right, top);
